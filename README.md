@@ -1,6 +1,6 @@
 # Volunteer Demo — JSP & Servlet Basics
 
-A minimal web app to introduce APT extra-class volunteers to how our student projects work.
+A minimal web app to help you understand how the student projects in APT extra classes work.
 
 ## Prerequisites
 
@@ -37,19 +37,20 @@ There are two ways to run Tomcat in this course:
 
 ---
 
-**Run it:**
+## Running the App
+
 ```bash
 mvn clean package cargo:run
 ```
 Then visit: [http://localhost:9090/demo/greeting](http://localhost:9090/demo/greeting)
 
+To stop the server, press `Ctrl+C` in the terminal.
+
 ---
 
-## Session Guide
+## 1. Project Structure
 
-### 1. Project Structure (5 min)
-
-Before opening any code, show the folder layout:
+Here's what's inside this project:
 
 ```
 volunteer-demo/
@@ -60,17 +61,16 @@ volunteer-demo/
     └── greeting.jsp                         ← the VIEW (what the user sees)
 ```
 
-Key points to explain:
 - **`pom.xml`** — Maven config file. Lists what libraries (dependencies) the project needs. Maven downloads them automatically.
 - **`src/main/java/`** — where Java code lives (Servlets, DAOs, models).
-- **`src/main/webapp/WEB-INF/views/`** — where JSP pages live. Files inside `WEB-INF` are **hidden** from direct browser access — users must go through a Servlet first.
+- **`src/main/webapp/WEB-INF/views/`** — where JSP pages live. Files inside `WEB-INF` are **hidden** from direct browser access — you must go through a Servlet first.
 - **`target/`** — generated folder (the compiled `.war` file goes here). Never edit anything in `target/`.
 
 ---
 
-### 2. Dependencies in pom.xml (5 min)
+## 2. Dependencies in pom.xml
 
-Open `pom.xml` and walk through each dependency. Focus on **why** we need each one:
+Open `pom.xml` and look at the dependencies. Each one serves a specific purpose:
 
 | # | Dependency | What It Does | Scope |
 |---|-----------|-------------|-------|
@@ -79,36 +79,36 @@ Open `pom.xml` and walk through each dependency. Focus on **why** we need each o
 | 3 | `jakarta.servlet.jsp.jstl-api` | JSTL tags: `<c:if>`, `<c:forEach>`, `<c:out>` | included in WAR |
 | 4 | `jakarta.servlet.jsp.jstl` (impl) | The code that actually **runs** those JSTL tags | included in WAR |
 
-**"provided" means:** Tomcat already includes this library, so don't put it in the WAR file. We only need it during compilation.
-
+**"provided" means:** Tomcat already includes this library, so we don't put it in the WAR file. We only need it during compilation.
 
 ---
 
-### 3. The Servlet — GreetingServlet.java (10 min)
+## 3. The Servlet — GreetingServlet.java
 
 Open `src/main/java/com/demo/GreetingServlet.java`.
 
-#### What is a Servlet?
-A Java class that handles HTTP requests. When someone visits a URL, Tomcat calls the matching method:
+### What is a Servlet?
+
+A Servlet is a Java class that handles HTTP requests. When someone visits a URL, Tomcat calls the matching method:
 - **GET request** (typing a URL, clicking a link) → `doGet()`
 - **POST request** (submitting a form) → `doPost()`
 
-#### Walk through the code:
+### Key parts of the code:
 
 **`@WebServlet("/greeting")`**
 - This annotation maps the URL `/greeting` to this class.
 - Without it, Tomcat wouldn't know which Servlet handles which URL.
 
-**`doGet()`** — First visit
+**`doGet()`** — what happens when you first visit the page:
 ```
-User visits /demo/greeting
+You visit /demo/greeting
   → Tomcat calls doGet()
-    → Forwards to greeting.jsp (shows empty form)
+    → Forwards to greeting.jsp (shows the empty form)
 ```
 
-**`doPost()`** — Form submission
+**`doPost()`** — what happens when you submit the form:
 ```
-User submits form with name="Sandesh"
+You submit the form with name="Sandesh"
   → Tomcat calls doPost()
     → request.getParameter("name") reads "Sandesh" from the form
     → request.setAttribute("name", "Sandesh") puts it in the request
@@ -122,20 +122,21 @@ User submits form with name="Sandesh"
 
 ---
 
-### 4. The JSP — greeting.jsp (10 min)
+## 4. The JSP — greeting.jsp
 
 Open `src/main/webapp/WEB-INF/views/greeting.jsp`.
 
-#### What is a JSP?
-An HTML file with special tags that can display dynamic data. Tomcat compiles it into a Servlet behind the scenes — but we write it as HTML, which is much easier.
+### What is a JSP?
 
-#### Walk through the key parts:
+A JSP (JavaServer Pages) is an HTML file with special tags that can display dynamic data. Tomcat compiles it into a Servlet behind the scenes — but you write it as HTML, which is much easier.
 
-**Taglib directive (line 1 of actual HTML):**
+### Key parts of the file:
+
+**Taglib directive:**
 ```jsp
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 ```
-- This imports the JSTL Core library so we can use `<c:if>`, `<c:out>`, etc.
+- This imports the JSTL Core library so you can use `<c:if>`, `<c:out>`, etc.
 - Without this line, those tags won't work.
 
 **The form:**
@@ -145,7 +146,7 @@ An HTML file with special tags that can display dynamic data. Tomcat compiles it
     <button type="submit">Greet Me</button>
 </form>
 ```
-- `action="..."` — WHERE to send the data (our Servlet URL).
+- `action="..."` — WHERE to send the data (the Servlet URL).
 - `method="post"` — Tomcat will call `doPost()`.
 - `name="name"` — this key is what `request.getParameter("name")` reads in the Servlet.
 
@@ -155,9 +156,9 @@ An HTML file with special tags that can display dynamic data. Tomcat compiles it
     Hello, <c:out value="${name}" />!
 </c:if>
 ```
-- `${not empty name}` — only show this if `name` is not null/blank.
-- On first visit (GET), no `name` attribute exists → greeting is hidden.
-- After form submit (POST), `name` is set → greeting is shown.
+- `${not empty name}` — only shows this section if `name` is not null/blank.
+- On first visit (GET), no `name` attribute exists → the greeting is hidden.
+- After form submit (POST), `name` is set → the greeting appears.
 
 **XSS protection with `<c:out>`:**
 ```jsp
@@ -165,13 +166,13 @@ An HTML file with special tags that can display dynamic data. Tomcat compiles it
 ${name}                       ← DANGEROUS: renders raw HTML
 ```
 
-**Demo XSS:** Type `<script>alert('hacked')</script>` as the name.
-- With `<c:out>`: displays as text (safe).
-- Explain: if we used raw `${name}`, the browser would execute the script.
+**Try it yourself:** Type `<script>alert('hacked')</script>` as the name and submit.
+- With `<c:out>`: it displays as text (safe).
+- If we used raw `${name}`, the browser would execute that script — that's an XSS attack.
 
 ---
 
-### 5. Run It Together (5 min)
+## 5. Running the App
 
 ```bash
 mvn clean package cargo:run
@@ -180,21 +181,21 @@ mvn clean package cargo:run
 What this command does:
 1. `clean` — deletes the `target/` folder (fresh build)
 2. `package` — compiles Java code, packages into a `.war` file
-3. `cargo:run` — downloads Tomcat (first time only), deploys the WAR, starts server
+3. `cargo:run` — downloads Tomcat (first time only), deploys the WAR, starts the server
 
 Visit: [http://localhost:9090/demo/greeting](http://localhost:9090/demo/greeting)
 
-**Live walkthrough:**
-1. Show the empty form (this is a GET request → `doGet()`)
-2. Type a name, click submit (this is a POST request → `doPost()`)
-3. Show the greeting appears
-4. Try the XSS demo: type `<script>alert('hacked')</script>` — it shows as text, not executed
+**Try these steps:**
+1. You'll see the empty form — this is a GET request, which triggered `doGet()`
+2. Type a name and click submit — this is a POST request, which triggers `doPost()`
+3. The greeting appears with your name
+4. Try the XSS test: type `<script>alert('hacked')</script>` — it displays as text, not executed
 
-Stop the server: press `Ctrl+C` in the terminal.
+To stop the server, press `Ctrl+C` in the terminal.
 
 ---
 
-### 6. The MVC Pattern — Putting It All Together (2 min)
+## 6. The MVC Pattern — How It All Connects
 
 ```
          REQUEST                    DATA                     RESPONSE
@@ -205,13 +206,13 @@ Browser ---------> Servlet ----setAttribute----> JSP ---------> Browser
 
 - **Model** — the data (`name = "Sandesh"`)
 - **View** — the JSP page (displays the data as HTML)
-- **Controller** — the Servlet (receives request, prepares data, picks which view to show)
+- **Controller** — the Servlet (receives the request, prepares data, picks which view to show)
 
-Students will be building apps that follow this exact pattern, with more servlets, more JSPs, and a database layer (DAO) for storing data.
+In the student projects, you'll see this same pattern but with more servlets, more JSPs, and a database layer (DAO) for storing data.
 
 ---
 
-## Quick Reference for Volunteers
+## Quick Reference
 
 | Concept | What It Is | Example |
 |---------|-----------|---------|
