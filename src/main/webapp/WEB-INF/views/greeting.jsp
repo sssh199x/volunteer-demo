@@ -6,7 +6,7 @@
     dynamic Java content. Tomcat compiles it into a Servlet
     behind the scenes.
 
-    Think of JSP as the VIEW — it's what the user sees.
+    The JSP is the VIEW — it's what you see in the browser.
     The Servlet (controller) prepares the data,
     the JSP (view) displays it.
 
@@ -88,14 +88,14 @@
         THE FORM
         =============================================
         action="${pageContext.request.contextPath}/greeting"
-          — sends the form data to our GreetingServlet
+          — sends the form data to the GreetingServlet
 
         method="post"
           — uses POST method, so Tomcat calls doPost()
-          — if we used method="get", Tomcat would call doGet()
+          — if it used method="get", Tomcat would call doGet()
 
         name="name"
-          — this is the key we use in the Servlet:
+          — this is the key used in the Servlet:
             request.getParameter("name")
     --%>
     <form action="${pageContext.request.contextPath}/greeting" method="post">
@@ -108,7 +108,7 @@
         =============================================
         CONDITIONAL DISPLAY WITH <c:if>
         =============================================
-        ${name} refers to the request attribute we set in the Servlet:
+        ${name} refers to the request attribute set in the Servlet:
             request.setAttribute("name", name);
 
         <c:if test="${not empty name}"> means:
@@ -121,11 +121,11 @@
         <div class="greeting-box">
             <%--
                 <c:out> displays the value with HTML escaping (XSS protection).
-                If someone typed <script>alert('hack')</script> as their name,
+                If someone typed <script>alert('hack')</script> as their name:
                   - ${name} would EXECUTE the script (dangerous!)
                   - <c:out value="${name}"> would DISPLAY it as text (safe!)
 
-                RULE: Always use <c:out> for user-provided data.
+                Always use <c:out> when displaying user-provided data.
             --%>
             Hello, <c:out value="${name}" />! Welcome to the APT Extra Class.
         </div>

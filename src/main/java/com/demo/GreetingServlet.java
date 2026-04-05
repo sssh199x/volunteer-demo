@@ -13,12 +13,12 @@ import java.io.IOException;
  * =============================================
  * A Servlet is a Java class that handles HTTP requests.
  * When someone visits a URL, Tomcat calls the appropriate
- * method in your Servlet:
+ * method in this Servlet:
  *   - GET request  (typing URL, clicking link) -> doGet()
  *   - POST request (submitting a form)         -> doPost()
  *
- * Think of a Servlet as a CONTROLLER — it sits between
- * the user's browser and your JSP pages:
+ * A Servlet acts as the CONTROLLER — it sits between
+ * the browser and the JSP pages:
  *
  *   Browser --request--> Servlet --forward--> JSP --response--> Browser
  *
@@ -32,35 +32,35 @@ import java.io.IOException;
 public class GreetingServlet extends HttpServlet {
 
     /**
-     * doGet — handles GET requests (when user first visits the page).
+     * doGet — handles GET requests (when you first visit the page).
      *
      * What happens:
-     * 1. User visits http://localhost:9090/demo/greeting
+     * 1. You visit http://localhost:9090/demo/greeting
      * 2. Tomcat calls this doGet() method
-     * 3. We forward to greeting.jsp (which shows the form)
+     * 3. It forwards to greeting.jsp (which shows the form)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         // Forward to the JSP page — this tells Tomcat:
-        // "Show the user the greeting.jsp page"
+        // "Send the user to the greeting.jsp page"
         //
         // Why /WEB-INF/views/? Files inside WEB-INF are HIDDEN from direct access.
-        // Users can't type /WEB-INF/views/greeting.jsp in their browser.
-        // They MUST go through the servlet — this is the MVC pattern.
+        // You can't type /WEB-INF/views/greeting.jsp in the browser.
+        // You MUST go through the servlet — this is the MVC pattern.
         request.getRequestDispatcher("/WEB-INF/views/greeting.jsp")
                 .forward(request, response);
     }
 
     /**
-     * doPost — handles POST requests (when user submits the form).
+     * doPost — handles POST requests (when you submit the form).
      *
      * What happens:
-     * 1. User types their name and clicks "Greet Me"
+     * 1. You type your name and click "Greet Me"
      * 2. The form sends a POST request to /greeting
      * 3. Tomcat calls this doPost() method
-     * 4. We read the name, set it as an attribute, forward to JSP
+     * 4. It reads the name, sets it as an attribute, and forwards to the JSP
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -72,7 +72,7 @@ public class GreetingServlet extends HttpServlet {
 
         // Step 2: Set data as a request attribute
         // This makes "name" available in the JSP as ${name}
-        // Think of it as putting data in a box that the JSP can open.
+        // It's like putting data in a box that the JSP can open.
         request.setAttribute("name", name);
 
         // Step 3: Forward to the same JSP — but now it has the name data
