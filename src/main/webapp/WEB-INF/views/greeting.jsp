@@ -89,14 +89,18 @@
         =============================================
         action="${pageContext.request.contextPath}/greeting"
           — sends the form data to the GreetingServlet
+          — ${pageContext.request.contextPath} is a built-in JSP object
+            that resolves to "/demo" — this comes from pom.xml (line 133):
+            <context>/demo</context>
+          — so the full action becomes: /demo/greeting
 
         method="post"
           — uses POST method, so Tomcat calls doPost()
           — if it used method="get", Tomcat would call doGet()
 
         name="name"
-          — this is the key used in the Servlet:
-            request.getParameter("name")
+          — this is the key used in the Servlet to read the value:
+            request.getParameter("name") — see GreetingServlet.java (line 76)
     --%>
     <form action="${pageContext.request.contextPath}/greeting" method="post">
         <label for="name">Enter your name:</label><br /><br />
@@ -109,7 +113,7 @@
         CONDITIONAL DISPLAY WITH <c:if>
         =============================================
         ${name} refers to the request attribute set in the Servlet:
-            request.setAttribute("name", name);
+            request.setAttribute("name", name) — see GreetingServlet.java (line 81)
 
         <c:if test="${not empty name}"> means:
             "Only show this section if 'name' is not null and not blank"

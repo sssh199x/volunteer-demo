@@ -27,6 +27,11 @@ import java.io.IOException;
  * =============================================
  * This tells Tomcat: "When someone visits /greeting, use THIS servlet."
  * Without this annotation, Tomcat wouldn't know which class handles which URL.
+ *
+ * The full URL is: http://localhost:9090/demo/greeting
+ *   - 9090  — the port, set in pom.xml <cargo.servlet.port> (line 24)
+ *   - /demo — the context path, set in pom.xml <context>/demo</context> (line 133)
+ *   - /greeting — this @WebServlet annotation right here
  */
 @WebServlet("/greeting")
 public class GreetingServlet extends HttpServlet {
@@ -67,11 +72,11 @@ public class GreetingServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Step 1: Read the form data
-        // "name" matches the <input name="name"> in the JSP form
+        // "name" matches the <input name="name"> in greeting.jsp (line 107)
         String name = request.getParameter("name");
 
         // Step 2: Set data as a request attribute
-        // This makes "name" available in the JSP as ${name}
+        // This makes "name" available in the JSP as ${name} — see greeting.jsp (line 134)
         // It's like putting data in a box that the JSP can open.
         request.setAttribute("name", name);
 
