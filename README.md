@@ -212,6 +212,41 @@ In the student projects, you'll see this same pattern but with more servlets, mo
 
 ---
 
+## Frequently Asked Questions
+
+**Q: Where is `web.xml`? Don't we need it?**
+
+In older Java web projects, `web.xml` was required — it mapped URLs to Servlets and configured the app. But since Servlet 3.0+, we can use **annotations** instead. The `@WebServlet("/greeting")` annotation on our Servlet does the same job as a `web.xml` mapping. So we don't need a `web.xml` at all for this project. In the student projects, you might see `web.xml` used for things like error pages (e.g., custom 404 pages), but for basic servlet mapping, annotations are simpler and preferred.
+
+**Q: Why is there no welcome/index page? What happens if I visit `http://localhost:9090/demo/`?**
+
+You'll get a 404 error because there's no `index.html`, `index.jsp`, or welcome file configured. This is intentional — in this demo, you go directly to `http://localhost:9090/demo/greeting`. In the student projects, there's usually a servlet mapped to `/` or a welcome file that redirects to the main page.
+
+**Q: Why `jakarta.*` instead of `javax.*`?**
+
+In 2017, Java EE was transferred from Oracle to the Eclipse Foundation and renamed to **Jakarta EE**. The package names changed from `javax.servlet` to `jakarta.servlet`. Since we use Tomcat 10+ (which implements Jakarta EE), we use `jakarta.*`. If you see `javax.*` in older tutorials or the lecturer's slides, that's the old naming — don't mix them.
+
+**Q: Can we put JSP files outside `WEB-INF`?**
+
+Yes, and they'd be accessible directly in the browser (e.g., `http://localhost:9090/demo/greeting.jsp`). But that **bypasses the Servlet** — meaning no data gets prepared, no security checks happen. Putting JSPs inside `WEB-INF` forces all requests through a Servlet first, which is the proper MVC pattern.
+
+**Q: What's the difference between `forward` and `redirect`?**
+
+- **Forward** (`request.getRequestDispatcher(...).forward(...)`) — happens **server-side**. The browser doesn't know it happened. The URL stays the same. The request attributes (`${name}`) are preserved.
+- **Redirect** (`response.sendRedirect(...)`) — tells the **browser** to make a new request. The URL changes. Request attributes are lost (new request).
+
+In this demo, we use forward because we need `${name}` to reach the JSP. In the student projects, redirects are used after form submissions (POST → redirect → GET pattern) to prevent duplicate submissions on refresh.
+
+**Q: What's a WAR file?**
+
+WAR stands for **Web Application Archive**. It's a `.zip` file with a `.war` extension that contains everything needed to run the web app: compiled Java classes, JSP files, CSS/JS, and libraries. When you run `mvn package`, Maven creates `target/volunteer-demo-1.0-SNAPSHOT.war`. Cargo takes that WAR and deploys it into Tomcat.
+
+**Q: Why do we need both JSTL API and JSTL Implementation?**
+
+The **API** (`jakarta.servlet.jsp.jstl-api`) defines what the tags are — like an interface. The **Implementation** (`jakarta.servlet.jsp.jstl` from Glassfish) is the actual code that runs the tags. Without the API, your JSP wouldn't compile. Without the implementation, the tags would compile but fail at runtime. You always need both.
+
+---
+
 ## Quick Reference
 
 | Concept | What It Is | Example |
